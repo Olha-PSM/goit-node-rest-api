@@ -4,7 +4,7 @@ import HttpError from "../helpers/HttpError.js";
 const isValidId = (req, res, next) => {
   const { id } = req.params;
   if (!isValidObjectId(id)) {
-    return next(HttpError(400, `${id} is not valid id`));
+    next(HttpError(400, `${id} is not valid id`));
   }
   next();
 };

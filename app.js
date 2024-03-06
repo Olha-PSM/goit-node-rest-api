@@ -1,11 +1,12 @@
 import "dotenv/config";
 import express from "express";
-import routes from "./routes/index.js";
+
 import "./routes/db.js";
+import contactsRouter from "./routes/contacts.js";
 
 const app = express();
 
-app.use("/api", routes);
+app.use("/api/contacts", contactsRouter);
 // Handle 404
 app.use((req, res, next) => {
   res.status(404).send("Not Found");
@@ -13,8 +14,8 @@ app.use((req, res, next) => {
 
 // Handle 500
 app.use((error, req, res, next) => {
-  console.error(error);
-  res.status(500).send("Interval Server Error");
+  const { status = 500, message = "Interval Server Error" } = error;
+  res.status(status).send(message);
 });
 
 app.listen(8080, () => {
