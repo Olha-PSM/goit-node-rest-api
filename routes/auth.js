@@ -1,0 +1,25 @@
+import express from "express";
+import AuthController from "../controllers/auth.js";
+import auth from "../middleware/auth.js";
+import validateBody from "../helpers/validateBody.js";
+import { userRegisterSchema, userLoginSchema } from "../models/users.js";
+
+const router = express.Router();
+const jsonParser = express.json();
+router.post(
+  "/register",
+  validateBody(userRegisterSchema),
+  jsonParser,
+  AuthController.register
+);
+
+router.post(
+  "/login",
+  validateBody(userLoginSchema),
+  jsonParser,
+  AuthController.login
+);
+router.get("/current", auth, AuthController.getCurrent);
+router.get("/logout", auth, AuthController.logout);
+
+export default router;
