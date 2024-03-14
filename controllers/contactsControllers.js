@@ -17,15 +17,14 @@ async function getAllContacts(req, res, next) {
   }
 }
 async function getOneContact(req, res, next) {
+  const { _id: owner } = req.user;
   const { id } = req.params;
-  try {
-    const result = await Contact.findById(id);
 
-    if (!result) {
-      throw HttpError(404);
-    }
-    if (result.owner.toString() !== req.user.id) {
-      return res.status(404).send("Contact not found:(");
+  try {
+    const result = await Contact.findOne({ _id: id, owner });
+
+    if (result === null) {
+      return res.status(404).send("Contact not found");
     }
 
     res.send(result);
@@ -34,13 +33,13 @@ async function getOneContact(req, res, next) {
   }
 }
 async function createContact(req, res, next) {
+  // const { _id: owner } = req.user;
   const contact = {
     email: req.body.email,
     phone: req.body.phone,
     favorite: req.body.favorite,
     owner: req.user.id,
   };
-
   try {
     const { error } = createContactSchema.validate(req.body);
     if (error) throw HttpError(400, error.message);
@@ -55,10 +54,8 @@ async function updateContact(req, res, next) {
   const { id } = req.params;
 
   const contact = {
-    name: req.body.name,
     email: req.body.email,
     phone: req.body.phone,
-    favorite: req.body.favorite,
   };
 
   try {
@@ -69,39 +66,55 @@ async function updateContact(req, res, next) {
     }
     const result = await Contact.findByIdAndUpdate(id, contact, { new: true });
     if (!result) {
-      throw HttpError(404);
+      throw HttpError(404, "Not found");
     }
-
+    if (result.owner.toString() !== req.user._id.toString()) {
+      return res.status(404).json("Contact not found");
+    }
     res.send(result);
   } catch (error) {
     next(error);
   }
 }
+
 async function deleteContact(req, res, next) {
   const { id } = req.params;
 
   try {
     const result = await Contact.findByIdAndDelete(id);
-
-    if (!result) {
-      throw HttpError(404);
+    if (result === null) {
+      return res.status(404).send("Contact not found");
     }
-    res.send({ id });
+
+    if (result.owner.toString() !== req.user.id) {
+      return res.status(404).send("Contact not found");
+    }
+    res.send("Contact deleted");
   } catch (error) {
     next(error);
   }
 }
-
 async function updateFavorite(req, res, next) {
   const { id } = req.params;
-  const { favorite } = req.body;
+
+  const contact = {
+    email: req.body.email,
+    phone: req.body.phone,
+    favorite: req.body.favorite,
+  };
 
   try {
-    const result = await Contact.findByIdAndUpdate(id, favorite, { new: true });
     const { error } = updateStatusSchema.validate(req.body);
     if (error) throw HttpError(400, error.message);
+    const result = await Contact.findByIdAndUpdate(id, contact, {
+      new: true,
+    });
+
     if (!result) {
       throw HttpError(404, "Not found");
+    }
+    if (result.owner.toString() !== req.user._id.toString()) {
+      return res.status(404).json("Contact not found");
     }
 
     res.send(result);

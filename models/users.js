@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { Schema, model } from "mongoose";
 
 import Joi from "joi";
 import handleMongooseError from "../helpers/handleMongooseError.js";
@@ -33,13 +32,12 @@ const userSchema = new mongoose.Schema(
 userSchema.post("save", handleMongooseError);
 
 export const userRegisterSchema = Joi.object({
-  password: Joi.string().min(6).required(),
   email: Joi.string().pattern(emailRegexp).required(),
-  subscription: Joi.string().required(),
+  password: Joi.string().min(6).required(),
 });
 
 export const userLoginSchema = Joi.object({
-  password: Joi.string().min(6).required(),
   email: Joi.string().pattern(emailRegexp).required(),
+  password: Joi.string().min(6).required(),
 });
 export default mongoose.model("User", userSchema);

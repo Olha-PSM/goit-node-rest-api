@@ -1,6 +1,7 @@
 import express from "express";
 import ContactController from "../controllers/contactsControllers.js";
 import isValidId from "../helpers/isValidId.js";
+
 const router = express.Router();
 const jsonParser = express.json();
 
@@ -16,7 +17,13 @@ router.patch(
   ContactController.updateFavorite
 );
 
-router.put("/:id", isValidId, jsonParser, ContactController.updateContact);
+router.put(
+  "/:id",
+
+  isValidId,
+  jsonParser,
+  ContactController.updateContact
+);
 
 router.delete("/:id", isValidId, ContactController.deleteContact);
 export default router;
