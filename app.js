@@ -8,7 +8,7 @@ import auth from "./middleware/auth.js";
 
 const app = express();
 
-app.use("/api/auth", authRoutes);
+app.use("/api/users", authRoutes);
 app.use("/api/contacts", auth, contactsRouter);
 
 // Handle 404

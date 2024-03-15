@@ -1,8 +1,6 @@
 import express from "express";
 import AuthController from "../controllers/auth.js";
 import auth from "../middleware/auth.js";
-// import validateBody from "../helpers/validateBody.js";
-// import { userRegisterSchema, userLoginSchema } from "../models/users.js";
 
 const router = express.Router();
 const jsonParser = express.json();
